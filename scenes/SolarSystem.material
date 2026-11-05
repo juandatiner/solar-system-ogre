@@ -1,0 +1,791 @@
+// Materials for solar_system.scenepp.
+// Textures: Solar System Scope (https://www.solarsystemscope.com/textures/),
+// licensed under CC BY 4.0. The texture of Ceres is an artistic recreation.
+// No real texture is used for Pluto and the small moons: they are the Moon's,
+// tinted with an approximate colour.
+
+vertex_program PlanetVS glsl
+{
+    source planet.vert
+    default_params
+    {
+        param_named_auto worldViewProj worldviewproj_matrix
+        param_named_auto world world_matrix
+    }
+}
+
+fragment_program PlanetFS glsl
+{
+    source planet.frag
+}
+
+fragment_program EarthFS glsl
+{
+    source planet.frag
+    preprocessor_defines EARTH=1
+}
+
+fragment_program SaturnFS glsl
+{
+    source planet.frag
+    preprocessor_defines SATURN=1
+}
+
+fragment_program CloudsFS glsl
+{
+    source planet.frag
+    preprocessor_defines CLOUDS=1
+}
+
+fragment_program RingFS glsl
+{
+    source ring.frag
+}
+
+material SunTextured
+{
+    technique
+    {
+        pass
+        {
+            lighting off
+            cull_hardware none
+
+            texture_unit
+            {
+                texture 2k_sun.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material StarsTextured
+{
+    technique
+    {
+        pass
+        {
+            lighting off
+            cull_hardware none
+            depth_check off
+            depth_write off
+
+            texture_unit
+            {
+                texture 2k_stars_milky_way.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material SunGlow
+{
+    technique
+    {
+        pass
+        {
+            lighting off
+            scene_blend add
+            depth_write off
+
+            texture_unit
+            {
+                texture sun_glow.png
+                tex_address_mode clamp
+            }
+        }
+    }
+}
+
+material AsteroidDot
+{
+    technique
+    {
+        pass
+        {
+            lighting off
+            scene_blend alpha_blend
+            depth_write off
+
+            texture_unit
+            {
+                texture sun_glow.png
+                tex_address_mode clamp
+            }
+        }
+    }
+}
+
+material CometPuff
+{
+    technique
+    {
+        pass
+        {
+            lighting off
+            scene_blend add
+            depth_write off
+
+            texture_unit
+            {
+                texture sun_glow.png
+                tex_address_mode clamp
+            }
+        }
+    }
+}
+
+// Uses the vertex colours set by the viewer
+material OrbitLine
+{
+    technique
+    {
+        pass
+        {
+            lighting off
+            scene_blend alpha_blend
+            depth_write off
+        }
+    }
+}
+
+material SaturnRingTextured
+{
+    technique
+    {
+        pass
+        {
+            lighting off
+            cull_hardware none
+            scene_blend alpha_blend
+            depth_write off
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref RingFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named planet float4 0 0 0 1
+            }
+
+            texture_unit
+            {
+                texture 2k_saturn_ring_alpha.png
+                tex_address_mode clamp
+            }
+        }
+    }
+}
+
+material EarthClouds
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+            scene_blend alpha_blend
+            depth_write off
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref CloudsFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+            }
+
+            texture_unit
+            {
+                texture 2k_earth_clouds.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material MercuryTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 1 1 1 1
+                param_named atmosphere float4 0 0 0 0
+            }
+
+            texture_unit
+            {
+                texture 2k_mercury.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material VenusTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 1 1 1 1
+                param_named atmosphere float4 1 0.85 0.55 0.7
+            }
+
+            texture_unit
+            {
+                texture 2k_venus_atmosphere.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material EarthTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref EarthFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 1 1 1 1
+                param_named atmosphere float4 0.35 0.6 1 0.9
+                param_named nightMap int 1
+                param_named spot float4 0 0 0 0
+            }
+
+            texture_unit
+            {
+                texture 2k_earth_daymap.jpg
+                tex_address_mode wrap
+            }
+            texture_unit
+            {
+                texture 2k_earth_nightmap.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material MoonTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 1 1 1 1
+                param_named atmosphere float4 0 0 0 0
+            }
+
+            texture_unit
+            {
+                texture 2k_moon.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material MarsTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 1 1 1 1
+                param_named atmosphere float4 1 0.6 0.4 0.25
+            }
+
+            texture_unit
+            {
+                texture 2k_mars.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material PhobosTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 0.55 0.5 0.45 1
+                param_named atmosphere float4 0 0 0 0
+            }
+
+            texture_unit
+            {
+                texture 2k_moon.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material DeimosTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 0.6 0.55 0.5 1
+                param_named atmosphere float4 0 0 0 0
+            }
+
+            texture_unit
+            {
+                texture 2k_moon.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material CeresTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 1 1 1 1
+                param_named atmosphere float4 0 0 0 0
+            }
+
+            texture_unit
+            {
+                texture 2k_ceres_fictional.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material JupiterTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 1 1 1 1
+                param_named atmosphere float4 0.9 0.8 0.65 0.25
+            }
+
+            texture_unit
+            {
+                texture 2k_jupiter.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material IoTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 1.2 1.05 0.5 1
+                param_named atmosphere float4 0 0 0 0
+            }
+
+            texture_unit
+            {
+                texture 2k_moon.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material EuropaTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 1.2 1.15 1.05 1
+                param_named atmosphere float4 0 0 0 0
+            }
+
+            texture_unit
+            {
+                texture 2k_moon.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material GanymedeTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 0.85 0.8 0.72 1
+                param_named atmosphere float4 0 0 0 0
+            }
+
+            texture_unit
+            {
+                texture 2k_moon.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material CallistoTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 0.6 0.55 0.5 1
+                param_named atmosphere float4 0 0 0 0
+            }
+
+            texture_unit
+            {
+                texture 2k_moon.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material SaturnTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref SaturnFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 1 1 1 1
+                param_named atmosphere float4 0.95 0.85 0.65 0.25
+                param_named ringCenter float4 0 0 0 1
+                param_named ringNormal float4 0 1 0 0
+                param_named ringRadii float4 0 0 0 0
+            }
+
+            texture_unit
+            {
+                texture 2k_saturn.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material TitanTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 1.15 0.8 0.4 1
+                param_named atmosphere float4 1 0.65 0.3 0.6
+            }
+
+            texture_unit
+            {
+                texture 2k_moon.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material UranusTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 1 1 1 1
+                param_named atmosphere float4 0.6 0.9 0.95 0.35
+            }
+
+            texture_unit
+            {
+                texture 2k_uranus.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material NeptuneTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 1 1 1 1
+                param_named atmosphere float4 0.4 0.55 1 0.35
+            }
+
+            texture_unit
+            {
+                texture 2k_neptune.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material PlutoTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 1 0.85 0.7 1
+                param_named atmosphere float4 0 0 0 0
+            }
+
+            texture_unit
+            {
+                texture 2k_moon.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material HalleyTextured
+{
+    technique
+    {
+        pass
+        {
+            cull_hardware none
+
+            vertex_program_ref PlanetVS
+            {
+            }
+            fragment_program_ref PlanetFS
+            {
+                param_named diffuseMap int 0
+                param_named_auto lightPos light_position 0
+                param_named_auto ambient ambient_light_colour
+                param_named_auto cameraPos camera_position
+                param_named tint float4 0.7 0.7 0.7 1
+                param_named atmosphere float4 0 0 0 0
+            }
+
+            texture_unit
+            {
+                texture 2k_moon.jpg
+                tex_address_mode wrap
+            }
+        }
+    }
+}
